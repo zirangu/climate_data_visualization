@@ -25,7 +25,7 @@ def load_data():
 
 
 # Create the line plot for a selected country
-def create_line_plot(df, country,show_ci):
+def create_line_plot(df, country,show_ci, show_ma):
     df_country = df[df['Country'] == country].groupby('year').agg({
         'AverageTemperature': 'mean',
         'AverageTemperatureUncertainty': 'mean'
@@ -44,10 +44,28 @@ def create_line_plot(df, country,show_ci):
     #     )
     # ])
 
+     # Calculate the 20-year moving average
+    if show_ma:
+        df_country['MovingAverage'] = df_country['AverageTemperature'].rolling(window=20).mean()
+        # print(df_country.head(100)) # for debug purpose
+
     fig = px.line(df_country, x='year', y='AverageTemperature', title=f'Temperature Trend for {country}')
     
 
-     # Add confidence interval if checkbox is checked
+   
+
+    if show_ma:
+        fig.add_trace(go.Scatter(
+            name='20-Year Moving Average',
+            x=df_country['year'],
+            y=df_country['MovingAverage'],
+            mode='lines',
+            line=dict(color='rgb(255, 127, 14)'),
+            # visible='legendonly'  # Set to only show when selected in legend
+            showlegend = False
+        ))
+
+    # Add confidence interval if checkbox is checked
     if show_ci:
         fig.add_trace(go.Scatter(
             name='Upper Bound',
@@ -102,11 +120,14 @@ def main():
     selected_country = st.selectbox("Select a Country", countries)
 
 
-    show_ci = st.checkbox("Show Confidence Interval")
+    show_ci = st.checkbox("Show 95% Confidence Interval")
+
+    # Checkbox to show/hide the moving average
+    show_ma = st.checkbox("Show 20-Year Moving Average")
 
     # Display line plot for the selected country
     if selected_country:
-        line_fig = create_line_plot(df, selected_country,show_ci)
+        line_fig = create_line_plot(df, selected_country,show_ci,show_ma)
         st.plotly_chart(line_fig)
 
 if __name__ == "__main__":
