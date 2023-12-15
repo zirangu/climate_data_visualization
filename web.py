@@ -120,7 +120,7 @@ def main():
     selected_country = st.selectbox("Select a Country", countries)
 
 
-    show_ci = st.checkbox("Show 95% Confidence Interval")
+    show_ci = st.checkbox("Show 96% Confidence Interval")
 
     # Checkbox to show/hide the moving average
     show_ma = st.checkbox("Show 20-Year Moving Average")
