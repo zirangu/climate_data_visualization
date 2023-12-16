@@ -5,6 +5,7 @@ import plotly.graph_objs as go
 from datetime import datetime
 
 # Load and preprocess the data
+@st.cache_data
 def load_data():
 
     df = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
@@ -25,6 +26,7 @@ def load_data():
 
 
 # Create the line plot for a selected country
+@st.cache_data
 def create_line_plot(df, country,show_ci, show_ma):
     df_country = df[df['Country'] == country].groupby('year').agg({
         'AverageTemperature': 'mean',
